@@ -7,8 +7,10 @@
 //  Copyright 2011, Randy McMillan
 //
 
+#import "MainViewController.h"
 #import "ChildBrowserViewController.h"
 
+#define degreesToRadian(x) (M_PI * (x) / 180.0)
 
 @implementation ChildBrowserViewController
 
@@ -21,7 +23,7 @@
  // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-        // Custom initialization
+        NSLog(@"initWithNibName");// Custom initialization
     }
     return self;
 }
@@ -54,6 +56,8 @@
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
+    webView.opaque = NO;
+	webView.backgroundColor = [UIColor clearColor];
     [super viewDidLoad];
     
 	refreshBtn.image = [UIImage imageNamed:[[self class] resolveImageResource:@"ChildBrowser.bundle/but_refresh"]];
@@ -62,13 +66,9 @@
 	safariBtn.image = [UIImage imageNamed:[[self class] resolveImageResource:@"ChildBrowser.bundle/compass"]];
 
 	webView.delegate = self;
-	webView.scalesPageToFit = TRUE;
-	webView.backgroundColor = [UIColor whiteColor];
+	webView.scalesPageToFit = scaleEnabled;
 	NSLog(@"View did load");
 }
-
-
-
 
 
 - (void)didReceiveMemoryWarning {
@@ -101,19 +101,21 @@
 	[super dealloc];
 }
 
--(void)closeBrowser
-{
-	
-	if(delegate != NULL)
-	{
-		[delegate onClose];		
+-(void)closeBrowser {
+    
+	if (delegate != NULL) {
+		[delegate onClose];	
+        MainViewController* mvc = [delegate viewController];
+        [mvc removeFromSuperviewWithAnimation:self];
 	}
-    if ([self respondsToSelector:@selector(presentingViewController)]) { 
+
+/*    if ([self respondsToSelector:@selector(presentingViewController)]) { 
         //Reference UIViewController.h Line:179 for update to iOS 5 difference - @RandyMcMillan
         [[self presentingViewController] dismissViewControllerAnimated:YES completion:nil];
     } else {
         [[self parentViewController] dismissModalViewControllerAnimated:YES];
     }
+*/
 }
 
 -(IBAction) onDoneButtonPress:(id)sender
@@ -158,10 +160,28 @@
 		}
     }
 	
-	return NO;
+	return YES; // NO;
 }
 
-
+- (void)didRotateFromInterfaceOrientation: (UIInterfaceOrientation)fromInterfaceOrientation
+{
+	int i = 0;
+	
+	switch (self.interfaceOrientation){
+		case UIInterfaceOrientationPortrait:
+			i = 0;
+			break;
+		case UIInterfaceOrientationPortraitUpsideDown:
+			i = 180;
+			break;
+		case UIInterfaceOrientationLandscapeLeft:
+			i = -90;
+			break;
+		case UIInterfaceOrientationLandscapeRight:
+			i = 90;
+			break;
+	}
+}
 
 
 - (void)loadURL:(NSString*)url
@@ -222,6 +242,7 @@
 - (void)webView:(UIWebView *)wv didFailLoadWithError:(NSError *)error {
     NSLog (@"webView:didFailLoadWithError");
     [spinner stopAnimating];
+    if([error code] == NSURLErrorCancelled) return; // Ignore this error
     addressLabel.text = @"Failed";
     if (error != NULL) {
         UIAlertView *errorAlert = [[UIAlertView alloc]

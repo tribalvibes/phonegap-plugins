@@ -8,13 +8,8 @@
 //  Copyright 2011, Randy McMillan
 //
 
+#import "MainViewController.h"
 #import "ChildBrowserCommand.h"
-
-#ifdef PHONEGAP_FRAMEWORK
-	#import <PhoneGap/PhoneGapViewController.h>
-#else
-	#import "PhoneGapViewController.h"
-#endif
 
 
 @implementation ChildBrowserCommand
@@ -26,7 +21,7 @@
 	
     if(childBrowser == NULL)
 	{
-		childBrowser = [[ ChildBrowserViewController alloc ] initWithScale:FALSE ];
+		childBrowser = [[ ChildBrowserViewController alloc ] initWithScale:NO ];
 		childBrowser.delegate = self;
 	}
 	
@@ -34,16 +29,18 @@
 	NSString* strOrientations = [ options objectForKey:@"supportedOrientations"];
 	NSArray* supportedOrientations = [strOrientations componentsSeparatedByString:@","];
 */
-    PhoneGapViewController* cont = (PhoneGapViewController*)[ super appViewController ];
+    MainViewController* cont = (MainViewController*)[ super viewController ];
     childBrowser.supportedOrientations = cont.supportedOrientations;
+    [cont presentWithAnimation: childBrowser];
     
+/*    childBrowser.modalPresentationStyle = UIModalPresentationFormSheet;
     if ([cont respondsToSelector:@selector(presentViewController)]) {
         //Reference UIViewController.h Line:179 for update to iOS 5 difference - @RandyMcMillan
         [cont presentViewController:childBrowser animated:YES completion:nil];        
     } else {
         [ cont presentModalViewController:childBrowser animated:YES ];
     }                 
-        
+*/        
     NSString *url = (NSString*) [arguments objectAtIndex:0];
         
     [childBrowser loadURL:url  ];
