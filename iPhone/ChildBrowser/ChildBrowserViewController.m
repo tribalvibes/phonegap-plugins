@@ -104,7 +104,6 @@
 -(void)closeBrowser {
     
 	if (delegate != NULL) {
-		[delegate onClose];	
         MainViewController* mvc = [delegate viewController];
         [mvc removeFromSuperviewWithAnimation:self];
 	}
@@ -120,8 +119,10 @@
 
 -(IBAction) onDoneButtonPress:(id)sender
 {
+	if (delegate != NULL) {
+		[delegate onClose];	
+    }
 	[ self closeBrowser];
-
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]];
     [webView loadRequest:request];
 }
@@ -213,8 +214,14 @@
 	webView.hidden = NO;
 }
 
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    NSLog(@"shouldStartLoadWithRequest: %@", request.URL.absoluteString);
+    return YES;
+}
 
 - (void)webViewDidStartLoad:(UIWebView *)sender {
+	NSURLRequest *request = sender.request;
+	NSLog(@"start load: %@",request.URL.absoluteString);
 	addressLabel.text = @"Loading...";
 	backBtn.enabled = webView.canGoBack;
 	fwdBtn.enabled = webView.canGoForward;

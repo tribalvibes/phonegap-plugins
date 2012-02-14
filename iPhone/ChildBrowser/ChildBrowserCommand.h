@@ -25,6 +25,8 @@
 
 
 - (void) showWebPage:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
+- (NSString*) jsExec:(NSString*)jsString;
 - (void) onChildLocationChange:(NSString*)newLoc;
+- (void) onLoadError:(NSString*)url msg:(NSString*) msg;
 
 @end

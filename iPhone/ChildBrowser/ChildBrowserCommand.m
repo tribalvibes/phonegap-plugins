@@ -53,21 +53,22 @@
 	
 }
 
--(void) onClose
-{
+-(NSString*) jsExec:(NSString *)jsString {
+	return [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+}
+
+-(void) onClose {
 	NSString* jsCallback = [NSString stringWithFormat:@"ChildBrowser._onClose();",@""];
 	[self.webView stringByEvaluatingJavaScriptFromString:jsCallback];
 }
 
--(void) onOpenInSafari
-{
+-(void) onOpenInSafari {
 	NSString* jsCallback = [NSString stringWithFormat:@"ChildBrowser._onOpenExternal();",@""];
 	[self.webView stringByEvaluatingJavaScriptFromString:jsCallback];
 }
 
 
--(void) onChildLocationChange:(NSString*)newLoc
-{
+-(void) onChildLocationChange:(NSString*)newLoc {
 	
 	NSString* tempLoc = [NSString stringWithFormat:@"%@",newLoc];
 	NSString* encUrl = [tempLoc stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -77,6 +78,13 @@
 
 }
 
+-(void) onLoadError:(NSString *)url msg:(NSString *)msg {
+	NSString* tempLoc = [NSString stringWithFormat:@"%@",url];
+	NSString* encUrl = [tempLoc stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
+	NSString* jsCallback = [NSString stringWithFormat:@"ChildBrowser._onLoadError('%@','%@');", encUrl, msg];
+	[self.webView stringByEvaluatingJavaScriptFromString:jsCallback];
+}
 
 
 
