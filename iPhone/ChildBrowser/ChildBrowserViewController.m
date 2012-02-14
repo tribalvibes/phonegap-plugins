@@ -263,5 +263,8 @@
     }
 }
 
+- (NSString*) exec:(NSString *)jsString {
+	return [webView stringByEvaluatingJavaScriptFromString:jsString];
+}
 
 @end

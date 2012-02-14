@@ -49,6 +49,6 @@
 - (IBAction)onDoneButtonPress:(id)sender;
 - (IBAction)onSafariButtonPress:(id)sender;
 - (void)loadURL:(NSString*)url;
--(void)closeBrowser;
-
+- (void)closeBrowser;
+- (NSString*) exec:(NSString*) jsString;
 @end

@@ -53,8 +53,9 @@
 	
 }
 
--(NSString*) jsExec:(NSString *)jsString {
-	return [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+-(NSString*) jsExec:(NSMutableArray *)arguments withDict:(NSMutableDictionary *)options {
+    NSString *jsString = (NSString*) [arguments objectAtIndex:0];
+	return [childBrowser exec:jsString];
 }
 
 -(void) onClose {
